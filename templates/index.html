@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Rule Engine</h1>
+
+    <div class="form-section">
+        <h2>Create a Rule</h2>
+        <form id="createRuleForm">
+            <label for="ruleString">Rule:</label><br>
+            <textarea id="ruleString" placeholder="Enter rule (e.g., age > 30 AND salary > 50000)"></textarea><br><br>
+            <button type="button" onclick="createRule()">Create Rule</button>
+        </form>
+    </div>
+
+    <div class="form-section">
+        <h2>Evaluate a Rule</h2>
+        <form id="evaluateRuleForm">
+            <label for="ruleId">Rule ID:</label><br>
+            <input type="text" id="ruleId" placeholder="Enter Rule ID"><br><br>
+            <label for="data">Data:</label><br>
+            <textarea id="data" placeholder='Enter data as JSON (e.g., {"age": 35, "salary": 60000})'></textarea><br><br>
+            <button type="button" onclick="evaluateRule()">Evaluate Rule</button>
+        </form>
+    </div>
+
+    <div id="response"></div>
+
+    <script>
+        function createRule() {
+            const ruleString = document.getElementById('ruleString').value;
+            fetch('/create_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rule_string: ruleString }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function evaluateRule() {
+            const ruleId = document.getElementById('ruleId').value;
+            const data = document.getElementById('data').value;
+            fetch('/evaluate_rule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rule_id: ruleId, data: JSON.parse(data) }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').innerText = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
